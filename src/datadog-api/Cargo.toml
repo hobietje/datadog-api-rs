@@ -1,0 +1,16 @@
+[package]
+name = "datadog-api"
+version = "0.0.1"
+authors = ["Andy Vermeulen <mo@rokt.com>"]
+
+# This relates to a rustc version -- https://doc.rust-lang.org/cargo/reference/unstable.html
+edition = "2018"
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.59"
+tokio = { version = "1.5.0", features = ["full"] }
+
+[dev-dependencies]
+tokio-test = "0.4.2"
