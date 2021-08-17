@@ -3,6 +3,7 @@
 //! __Note:__ All Datadog API clients are configured by default to consume Datadog US site APIs. If you are on the Datadog EU site, set the environment variable `DATADOG_HOST` to `https://api.datadoghq.eu` or override this value directly when creating your client.
 //!
 //! [Manage your account’s API and application keys](https://app.datadoghq.com/account/settings?_gl=1*1oolcm8*_ga*MTcyNzk1OTEzOC4xNTk3OTkxODkx*_ga_KN80RDFSQK*MTYyOTE3Mzk1Ny40NC4xLjE2MjkxNzU2MjYuMA..#api).
+
 use serde::{Serialize, Deserialize};
 
 use crate::client::{*};
