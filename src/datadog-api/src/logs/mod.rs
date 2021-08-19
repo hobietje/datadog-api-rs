@@ -149,11 +149,7 @@ impl SearchRequest {
   pub async fn send(&self, client: &Client) -> Result<SearchResponse> {
       let url = format!("{}/api/v2/logs/events/search", client.host);
 
-      let resp = client.client.post(url)
-                            .header("DD-API-KEY", client.api_key.to_string())
-                            .header("DD-APPLICATION-KEY", client.application_key.to_string())
-                            .json(&self)
-                            .send().await?;
+      let resp = client.post(&url, &self).await?;
 
       match &resp.status().is_success() {
           true => {

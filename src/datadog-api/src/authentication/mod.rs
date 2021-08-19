@@ -16,9 +16,7 @@ impl ValidateRequest {
   pub async fn send(&self, client: &Client) -> Result<ValidateResponse> {
     let url = format!("{}/api/v1/validate", client.host);
 
-    let resp = client.client.get(url)
-                      .header("DD-API-KEY", client.api_key.to_string())
-                      .send().await?;
+    let resp = client.get(&url).await?;
 
     match &resp.status().is_success() {
         true => {

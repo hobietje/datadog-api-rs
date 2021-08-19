@@ -46,5 +46,23 @@ impl Client {
           client: reqwest::Client::new()
       }
   }
-}
 
+  pub (crate) async fn get(&self, url: &str) -> result::Result<reqwest::Response, Box<dyn error::Error>> {
+    let res = self.client.get(url)
+                  .header("DD-API-KEY", self.api_key.to_string())
+                  .header("DD-APPLICATION-KEY", self.application_key.to_string())
+                  .send()
+                  .await?;
+    Ok(res)
+  }
+
+  pub (crate) async fn post<T:Serialize>(&self, url: &str, json: &T) -> result::Result<reqwest::Response, Box<dyn error::Error>> {
+    let res = self.client.post(url)
+                  .header("DD-API-KEY", self.api_key.to_string())
+                  .header("DD-APPLICATION-KEY", self.application_key.to_string())
+                  .json(&json)
+                  .send()
+                  .await?;
+    Ok(res)
+  }
+}
