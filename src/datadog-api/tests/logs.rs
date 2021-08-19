@@ -3,7 +3,7 @@ use datadog_api::logs::*;
 use tokio_test::block_on;
 
 #[test]
-fn empty_search() {
+fn default_search() {
     let client = Client::default();
     let req = SearchRequest::default();
     let res = block_on(req.send(&client)).expect("API call failed");
