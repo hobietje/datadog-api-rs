@@ -39,6 +39,7 @@ impl Default for Client {
     Client::new(&dd_host, &dd_api_key, &dd_app_key)
   }
 }
+impl error::Error for ApiErrorResponse {}
 
 impl Client {
   pub fn new(host: &str, api_key: &str, application_key: &str) -> Client {

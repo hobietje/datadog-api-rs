@@ -47,7 +47,7 @@ impl ListRulesRequest {
           },
           _ => {
               let body = &resp.text().await?;
-              Err(Box::new(serde_json::from_str::<ErrorResponse>(&body)?))
+              Err(Box::new(serde_json::from_str::<ApiErrorResponse>(&body)?))
           }
       }
   }
