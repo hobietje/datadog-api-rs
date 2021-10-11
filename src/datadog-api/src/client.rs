@@ -50,7 +50,7 @@ impl Client {
     }
   }
 
-  pub(crate) async fn get(
+  pub async fn get(
     &self,
     path_and_query: &str,
   ) -> result::Result<reqwest::Response, Box<dyn error::Error>> {
@@ -65,7 +65,7 @@ impl Client {
     Ok(res)
   }
 
-  pub(crate) async fn post_jsonstr(
+  pub async fn post_jsonstr(
     &self,
     path_and_query: &str,
     json_str: &str,
@@ -82,7 +82,7 @@ impl Client {
     Ok(res)
   }
 
-  pub(crate) async fn post_json<T: Serialize>(
+  pub async fn post_json<T: Serialize>(
     &self,
     path_and_query: &str,
     json: &T,
@@ -99,7 +99,7 @@ impl Client {
     Ok(res)
   }
 
-  pub(crate) async fn put_jsonstr(
+  pub async fn put_jsonstr(
     &self,
     path_and_query: &str,
     json_str: &str,
@@ -116,7 +116,7 @@ impl Client {
     Ok(res)
   }
 
-  pub(crate) async fn put_json<T: Serialize>(
+  pub async fn put_json<T: Serialize>(
     &self,
     path_and_query: &str,
     json: &T,
