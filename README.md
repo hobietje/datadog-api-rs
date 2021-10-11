@@ -11,7 +11,7 @@ let client = Client::default();
 ```
 __Untyped Use:__
 
-Create the HTTP Request body JSON string manually and send raw requests.
+Create the HTTP Request body JSON string manually and send raw requests.  It is your responsibility to make sure that your JSON is correct and all values are appropriately escaped.
 
 ```rs
 let json = "{}";
@@ -51,7 +51,7 @@ I will be implementing new functionality on an "as needed" basis only for projec
 
 Contributions are welcome; send a PR.
 
-## API Endpiont Coverage
+## API Endpoint Coverage
 
 Rust-style Builders are in place to build requests and parse responses for the following APIs:
 
@@ -62,7 +62,7 @@ Rust-style Builders are in place to build requests and parse responses for the f
 | No   | Azure Integration                   |
 | No   | Cloud Workload Security             |
 | 3/9  | Dashboard Lists                     |
-| No   | Dashboards                          |
+| 2/14 | Dashboards                          |
 | No   | Downtimes                           |
 | No   | Embeddable Graphs                   |
 | No   | Events                              |
@@ -87,7 +87,7 @@ Rust-style Builders are in place to build requests and parse responses for the f
 | No   | Processes                           |
 | No   | Roles                               |
 | No   | Screenboards                        |
-| No   | Security Monitoring                 |
+| 1/12 | Security Monitoring                 |
 | No   | Service Accounts                    |
 | No   | Service Checks                      |
 | No   | Service Dependencies                |

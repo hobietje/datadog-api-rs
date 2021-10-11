@@ -4,10 +4,56 @@ use serde::{Serialize, Deserialize};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum WidgetDefinition {
+  #[serde(rename = "alert_graph")]
+  AlertGraph,
+  #[serde(rename = "alert_value")]
+  AlertValue,
+  #[serde(rename = "change")]
+  Change,
+  #[serde(rename = "check_status")]
+  CheckStatus,
+  #[serde(rename = "distribution")]
+  Distribution,
+  #[serde(rename = "event_stream")]
+  EventStream,
+  #[serde(rename = "event_timeline")]
+  EventTimeline,
+  #[serde(rename = "free_text")]
+  FreeText,
+  #[serde(rename = "geomap")]
+  Geomap,
+  #[serde(rename = "group")]
+  Group,
+  #[serde(rename = "heatmap")]
+  HeatMap,
+  #[serde(rename = "hostmap")]
+  Hostmap,
+  #[serde(rename = "iframe")]
+  Iframe,
+  #[serde(rename = "image")]
+  Image,
+  #[serde(rename = "log_stream")]
+  LogStream,
+  #[serde(rename = "manage_status")]
+  MonitorSummary,
   #[serde(rename = "note")]
-  Note(Note),
+  NotesAndLinks(NotesAndLinks),
   #[serde(rename = "query_value")]
   QueryValue(QueryValue),
+  #[serde(rename = "scatterplot")]
+  ScatterPlot,
+  #[serde(rename = "slo")]
+  ServiceLevelObjective,
+  #[serde(rename = "servicemap")]
+  ServiceMap,
+  #[serde(rename = "trace_service")]
+  ServiceSummary,
+  #[serde(rename = "query_table")]
+  Table,
+  #[serde(rename = "timeseries")]
+  TimeSeries,
+  #[serde(rename = "toplist")]
+  TopList,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -101,7 +147,7 @@ impl Default for MetricAggregator {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Note {
+pub struct NotesAndLinks {
   #[serde(skip_serializing_if = "Option::is_none")]
   pub background_color: Option<String>,
   pub content: String,
@@ -120,9 +166,9 @@ pub struct Note {
   #[serde(skip_serializing_if = "Option::is_none")]
   pub vertical_align: Option<VerticalAlign>,
 }
-impl Default for Note {
-  fn default() -> Note {
-    Note {
+impl Default for NotesAndLinks {
+  fn default() -> NotesAndLinks {
+    NotesAndLinks {
       background_color: None,
       content: "".to_string(),
       font_size: None,
@@ -135,7 +181,6 @@ impl Default for Note {
     }
   }
 }
-
 
 /// List of custom links.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
