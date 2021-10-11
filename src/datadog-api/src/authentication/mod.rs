@@ -13,12 +13,10 @@ use crate::client::{*};
 #[serde(default)]
 pub struct ValidateRequest {}
 impl ValidateRequest {
-  pub async fn send(&self, client: &Client) -> Result<ValidateResponse> {
-    let url = format!("{}/api/v1/validate", client.host);
+  pub async fn send(&self, client: &Client) -> DatadogResult<ValidateResponse> {
+    let path_and_query = "/api/v1/validate";
 
-    let resp = client.client.get(url)
-                      .header("DD-API-KEY", client.api_key.to_string())
-                      .send().await?;
+    let resp = client.get(path_and_query).await?;
 
     match &resp.status().is_success() {
         true => {
@@ -27,7 +25,7 @@ impl ValidateRequest {
         },
         _ => {
             let body = &resp.text().await?;
-            Err(Box::new(serde_json::from_str::<ErrorResponse>(&body)?))
+            Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(&body)?))
         }
     }
 }

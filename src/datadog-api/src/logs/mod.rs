@@ -146,14 +146,9 @@ impl SearchRequest {
     self
   }
   
-  pub async fn send(&self, client: &Client) -> Result<SearchResponse> {
-      let url = format!("{}/api/v2/logs/events/search", client.host);
-
-      let resp = client.client.post(url)
-                            .header("DD-API-KEY", client.api_key.to_string())
-                            .header("DD-APPLICATION-KEY", client.application_key.to_string())
-                            .json(&self)
-                            .send().await?;
+  pub async fn send(&self, client: &Client) -> DatadogResult<SearchResponse> {
+      let path_and_query = "/api/v2/logs/events/search";
+      let resp = client.post_json(path_and_query, self).await?;
 
       match &resp.status().is_success() {
           true => {
@@ -162,7 +157,7 @@ impl SearchRequest {
           },
           _ => {
               let body = &resp.text().await?;
-              Err(Box::new(serde_json::from_str::<ErrorResponse>(&body)?))
+              Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(&body)?))
           }
       }
   }
