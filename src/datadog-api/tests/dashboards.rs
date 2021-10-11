@@ -31,7 +31,7 @@ fn test_update_dashboard_complete() {
     let client = Client::default();
     let note = Widget {
         id: None,
-        definition: Some(WidgetDefinition::Note(Note {
+        definition: Some(WidgetDefinition::NotesAndLinks(NotesAndLinks {
             content: "__Objective:__ Ensure classified data is adequately protected\n\n__Indicator:__ AWS S3 Bucket contents is effectively hidden from the broader Internet\n\n---\n\nExport CSV of [all assets](https://meetkunde.eng.roktinternal.com/aws/s3/bucket_effective_access_is_restricted_appropriately) | [non-compliant assets](https://meetkunde.eng.roktinternal.com/aws/s3/bucket_effective_access_is_restricted_appropriately?norm=Violated)".to_string(),
             background_color: Some("white".to_string()),
             font_size: Some("14".to_string()),
