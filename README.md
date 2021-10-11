@@ -2,62 +2,103 @@
 
 Rust client for the Datadog API, using Tokio async.
 
+# Usage
+
+Initialize the client from environment variables `DATADOG_HOST`, `DD_API_KEY`, `DD_APP_KEY`:
+
+```rs
+let client = Client::default();
+```
+__Untyped Use:__
+
+Create the HTTP Request body JSON string manually and send raw requests.
+
+```rs
+let json = "{}";
+let path_and_query = format!("/api/v1/dashboard/{}", "das-hbo-ard");
+let resp = client.put_jsonstr(&path_and_query, json).await.unwrap();
+```
+
+__Typed Use:__
+
+Create the HTTP Request bodies using Rust Builders.  This will automatically parse HTTP Responses to typed objects as well.
+
+```rs
+let filter = Filter::default()
+    .from("now-90d")
+    .to("now")
+    .indexes(vec!["*".to_string()])
+    .query("hello");
+let options = Options::default()
+    .timezone("UTC+10:00");
+let req = SearchRequest::default()
+    .filter(filter)
+    .options(options)
+    .sort(Sort::TimestampDesc);
+let res =req.send(&client).await.unwrap();
+```
+
 # Todo
 
-I will be implementing new functionality on an "as needed" basis only for projects I am working on.  I am not targeting 100% coverage of endpoints and features at this point in time.  Contributions are welcome!
+I will be implementing new functionality on an "as needed" basis only for projects I am working on.  I am not targeting 100% coverage of endpoints and features at this point in time.
 
-* To evaluate macros for codegen similar API calls
+* Macros to codegen similar parts of API calls
 * Handle rate limits
 * Iterators or Streams for paginated result sets
-* Paginated queries are ugly due to request builder being consumed
+* Paginated queries are currently messy due to request builder being consumed, needs redesign?
 * Increase coverage of API endpoints
+* Utilities to handle date ranges, timezones, etc.
 
-# API Coverage
+Contributions are welcome; send a PR.
 
-| Done | Category                            | Endpoints   |
-| ---- | ----------------------------------- | ----------- |
-| Yes  | Authentication                      | GET /api/v1/validate |
-| No   | AWS Integration                     | No          |
-| No   | Azure Integration                   | No          |
-| No   | Cloud Workload Security             | No          |
-| No   | Dashboard Lists                     | No          |
-| No   | Dashboards                          | No          |
-| No   | Downtimes                           | No          |
-| No   | Embeddable Graphs                   | No          |
-| No   | Events                              | No          |
-| No   | GCP Integration                     | No          |
-| No   | Hosts                               | No          |
-| No   | Incident Services                   | No          |
-| No   | Incident Teams                      | No          |
-| No   | Incidents                           | No          |
-| No   | IP Ranges                           | No          |
-| No   | Key Management                      | No          |
-| 1/4  | Logs                                | POST /api/v2/logs/events/search |
-| No   | Logs Archives                       | No          |
-| No   | Logs Indexes                        | No          |
-| No   | Logs Metrics                        | No          |
-| No   | Logs Pipelines                      | No          |
-| No   | Logs Restriction Queries            | No          |
-| No   | Metrics                             | No          |
-| No   | Monitors                            | No          |
-| No   | Notebooks                           | No          |
-| No   | Organizations                       | No          |
-| No   | PagerDuty Integration               | No          |
-| No   | Processes                           | No          |
-| No   | Roles                               | No          |
-| No   | Screenboards                        | No          |
-| No   | Security Monitoring                 | No          |
-| No   | Service Accounts                    | No          |
-| No   | Service Checks                      | No          |
-| No   | Service Dependencies                | No          |
-| No   | Service Level Objective Corrections | No          |
-| No   | Serivce Level Objectives            | No          |
-| No   | Slack Integration                   | No          |
-| No   | Snapshots                           | No          |
-| No   | Synthetics                          | No          |
-| No   | Tags                                | No          |
-| No   | Timeboards                          | No          |
-| No   | Tracing                             | No          |
-| No   | Usage Metering                      | No          |
-| No   | Users                               | No          |
-| No   | Webhooks Integration                | No          |
+## API Endpiont Coverage
+
+Rust-style Builders are in place to build requests and parse responses for the following APIs:
+
+| Done | Category                            |
+| ---- | ----------------------------------- |
+| Yes  | Authentication                      |
+| No   | AWS Integration                     |
+| No   | Azure Integration                   |
+| No   | Cloud Workload Security             |
+| 3/9  | Dashboard Lists                     |
+| No   | Dashboards                          |
+| No   | Downtimes                           |
+| No   | Embeddable Graphs                   |
+| No   | Events                              |
+| No   | GCP Integration                     |
+| No   | Hosts                               |
+| No   | Incident Services                   |
+| No   | Incident Teams                      |
+| No   | Incidents                           |
+| No   | IP Ranges                           |
+| No   | Key Management                      |
+| 1/4  | Logs                                |
+| No   | Logs Archives                       |
+| No   | Logs Indexes                        |
+| No   | Logs Metrics                        |
+| No   | Logs Pipelines                      |
+| No   | Logs Restriction Queries            |
+| No   | Metrics                             |
+| No   | Monitors                            |
+| No   | Notebooks                           |
+| No   | Organizations                       |
+| No   | PagerDuty Integration               |
+| No   | Processes                           |
+| No   | Roles                               |
+| No   | Screenboards                        |
+| No   | Security Monitoring                 |
+| No   | Service Accounts                    |
+| No   | Service Checks                      |
+| No   | Service Dependencies                |
+| No   | Service Level Objective Corrections |
+| No   | Service Level Objectives            |
+| No   | Slack Integration                   |
+| No   | Snapshots                           |
+| No   | Synthetics                          |
+| No   | Tags                                |
+| No   | Timeboards                          |
+| No   | Tracing                             |
+| No   | Usage Metering                      |
+| No   | Users                               |
+| No   | Webhooks Integration                |

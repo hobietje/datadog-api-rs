@@ -132,4 +132,38 @@ impl Client {
       .await?;
     Ok(res)
   }
+
+  pub async fn delete_jsonstr(
+    &self,
+    path_and_query: &str,
+    json_str: &str,
+  ) -> result::Result<reqwest::Response, Box<dyn error::Error>> {
+    let url = format!("{}{}", self.host, path_and_query);
+    let res = self
+      .client
+      .delete(url)
+      .header("DD-API-KEY", self.api_key.to_string())
+      .header("DD-APPLICATION-KEY", self.application_key.to_string())
+      .body(json_str.to_string())
+      .send()
+      .await?;
+    Ok(res)
+  }
+
+  pub async fn delete_json<T: Serialize>(
+    &self,
+    path_and_query: &str,
+    json: &T,
+  ) -> result::Result<reqwest::Response, Box<dyn error::Error>> {
+    let url = format!("{}{}", self.host, path_and_query);
+    let res = self
+      .client
+      .delete(url)
+      .header("DD-API-KEY", self.api_key.to_string())
+      .header("DD-APPLICATION-KEY", self.application_key.to_string())
+      .json(&json)
+      .send()
+      .await?;
+    Ok(res)
+  }
 }
