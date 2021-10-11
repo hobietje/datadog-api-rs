@@ -148,18 +148,7 @@ impl SearchRequest {
   
   pub async fn send(&self, client: &Client) -> DatadogResult<SearchResponse> {
       let path_and_query = "/api/v2/logs/events/search";
-      let resp = client.post_json(path_and_query, self).await?;
-
-      match &resp.status().is_success() {
-          true => {
-              let body = &resp.text().await?;
-              Ok(serde_json::from_str::<SearchResponse>(&body)?)
-          },
-          _ => {
-              let body = &resp.text().await?;
-              Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(&body)?))
-          }
-      }
+      client.post::<SearchRequest, SearchResponse>(path_and_query, self).await
   }
 }
 

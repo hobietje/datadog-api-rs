@@ -15,19 +15,7 @@ pub struct ValidateRequest {}
 impl ValidateRequest {
   pub async fn send(&self, client: &Client) -> DatadogResult<ValidateResponse> {
     let path_and_query = "/api/v1/validate";
-
-    let resp = client.get(path_and_query).await?;
-
-    match &resp.status().is_success() {
-        true => {
-            let body = &resp.text().await?;
-            Ok(serde_json::from_str::<ValidateResponse>(&body)?)
-        },
-        _ => {
-            let body = &resp.text().await?;
-            Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(&body)?))
-        }
-    }
+    client.get::<ValidateRequest, ValidateResponse>(path_and_query).await
 }
 }
 

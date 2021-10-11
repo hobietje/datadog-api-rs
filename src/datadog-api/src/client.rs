@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::env;
 use std::error;
 use std::fmt;
@@ -50,7 +50,7 @@ impl Client {
     }
   }
 
-  pub async fn get(
+  pub async fn get_raw(
     &self,
     path_and_query: &str,
   ) -> result::Result<reqwest::Response, Box<dyn error::Error>> {
@@ -63,6 +63,28 @@ impl Client {
       .send()
       .await?;
     Ok(res)
+  }
+
+  pub async fn get<'de, T: Serialize, R: DeserializeOwned>(
+    &self,
+    path_and_query: &str
+  ) -> result::Result<R, Box<dyn error::Error>> {
+    let resp = self.get_raw(path_and_query).await?;
+
+    match &resp.status().is_success() {
+      true => {
+        let body = resp.text().await?;
+        Ok(serde_json::from_str::<R>(
+          &body,
+        )?)
+      }
+      _ => {
+        let body = &resp.text().await?;
+        Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(
+          &body,
+        )?))
+      }
+    }
   }
 
   pub async fn post_jsonstr(
@@ -99,6 +121,29 @@ impl Client {
     Ok(res)
   }
 
+  pub async fn post<'de, T: Serialize, R: DeserializeOwned>(
+    &self,
+    path_and_query: &str,
+    json: &T,
+  ) -> result::Result<R, Box<dyn error::Error>> {
+    let resp = self.post_json(path_and_query, json).await?;
+
+    match &resp.status().is_success() {
+      true => {
+        let body = resp.text().await?;
+        Ok(serde_json::from_str::<R>(
+          &body,
+        )?)
+      }
+      _ => {
+        let body = &resp.text().await?;
+        Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(
+          &body,
+        )?))
+      }
+    }
+  }
+
   pub async fn put_jsonstr(
     &self,
     path_and_query: &str,
@@ -133,6 +178,29 @@ impl Client {
     Ok(res)
   }
 
+  pub async fn put<'de, T: Serialize, R: DeserializeOwned>(
+    &self,
+    path_and_query: &str,
+    json: &T,
+  ) -> result::Result<R, Box<dyn error::Error>> {
+    let resp = self.put_json(path_and_query, json).await?;
+
+    match &resp.status().is_success() {
+      true => {
+        let body = resp.text().await?;
+        Ok(serde_json::from_str::<R>(
+          &body,
+        )?)
+      }
+      _ => {
+        let body = &resp.text().await?;
+        Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(
+          &body,
+        )?))
+      }
+    }
+  }
+
   pub async fn delete_jsonstr(
     &self,
     path_and_query: &str,
@@ -165,5 +233,28 @@ impl Client {
       .send()
       .await?;
     Ok(res)
+  }
+
+  pub async fn delete<'de, T: Serialize, R: DeserializeOwned>(
+    &self,
+    path_and_query: &str,
+    json: &T,
+  ) -> result::Result<R, Box<dyn error::Error>> {
+    let resp = self.delete_json(path_and_query, json).await?;
+
+    match &resp.status().is_success() {
+      true => {
+        let body = resp.text().await?;
+        Ok(serde_json::from_str::<R>(
+          &body,
+        )?)
+      }
+      _ => {
+        let body = &resp.text().await?;
+        Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(
+          &body,
+        )?))
+      }
+    }
   }
 }

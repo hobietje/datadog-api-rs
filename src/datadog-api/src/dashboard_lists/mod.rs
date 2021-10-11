@@ -1,8 +1,6 @@
 //! Interact with your dashboard lists through the API to organize, find, and share all of your dashboards with your team and organization.
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use std::collections::HashMap;
 
 use crate::client::*;
 
@@ -69,22 +67,7 @@ impl GetDashboardListItemsRequest {
       "/api/v2/dashboard/lists/manual/{dashboard_list_id}/dashboards",
       dashboard_list_id = self.dashboard_list_id
     );
-    let resp = client.get(&path_and_query).await?;
-
-    match &resp.status().is_success() {
-      true => {
-        let body = &resp.text().await?;
-        Ok(serde_json::from_str::<GetDashboardListItemsResponse>(
-          &body,
-        )?)
-      }
-      _ => {
-        let body = &resp.text().await?;
-        Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(
-          &body,
-        )?))
-      }
-    }
+    client.get::<GetDashboardListItemsRequest, GetDashboardListItemsResponse>(&path_and_query).await
   }
 }
 
@@ -136,22 +119,7 @@ impl AddDashboardListItemsRequest {
       "/api/v2/dashboard/lists/manual/{dashboard_list_id}/dashboards",
       dashboard_list_id = self.dashboard_list_id
     );
-    let resp = client.post_json(&path_and_query, self).await?;
-
-    match &resp.status().is_success() {
-      true => {
-        let body = &resp.text().await?;
-        Ok(serde_json::from_str::<AddDashboardListItemsResponse>(
-          &body,
-        )?)
-      }
-      _ => {
-        let body = &resp.text().await?;
-        Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(
-          &body,
-        )?))
-      }
-    }
+    client.post::<AddDashboardListItemsRequest, AddDashboardListItemsResponse>(&path_and_query, self).await
   }
 }
 
@@ -190,22 +158,7 @@ impl DeleteDashboardListItemsRequest {
       "/api/v2/dashboard/lists/manual/{dashboard_list_id}/dashboards",
       dashboard_list_id = self.dashboard_list_id
     );
-    let resp = client.delete_json(&path_and_query, self).await?;
-
-    match &resp.status().is_success() {
-      true => {
-        let body = &resp.text().await?;
-        Ok(serde_json::from_str::<DeleteDashboardListItemsResponse>(
-          &body,
-        )?)
-      }
-      _ => {
-        let body = &resp.text().await?;
-        Err(Box::new(serde_json::from_str::<DatadogErrorResponse>(
-          &body,
-        )?))
-      }
-    }
+    client.delete::<DeleteDashboardListItemsRequest, DeleteDashboardListItemsResponse>(&path_and_query, self).await
   }
 }
 
