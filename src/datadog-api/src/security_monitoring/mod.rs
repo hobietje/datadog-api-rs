@@ -1,5 +1,4 @@
 use serde::{Serialize, Deserialize};
-use reqwest::Url;
 
 use crate::client::{*};
 
@@ -25,31 +24,22 @@ impl ListRulesRequest {
     self
   }
   
-  pub async fn send(&self, client: &Client) -> Result<ListRulesResponse> {
-      let endpoint = format!("{}/api/v2/security_monitoring/rules", client.host);
-      
-      let mut url = Url::parse(&endpoint)?;
+  pub async fn send(&self, client: &Client) -> DatadogResult<ListRulesResponse> {
+      let mut queries: Vec<String> = vec!();
       if let Some(page_number) = &self.page_number {
-        url.query_pairs_mut().append_pair("page[number]", &page_number.to_string());
-      } 
-      if let Some(page_size) = &self.page_size {
-        url.query_pairs_mut().append_pair("page[size]", &page_size.to_string());
-      } 
-      println!("{}", url.as_str());
-
-      
-      let resp = client.get(url.as_str()).await?;
-
-      match &resp.status().is_success() {
-          true => {
-              let body = &resp.text().await?;
-              Ok(serde_json::from_str::<ListRulesResponse>(&body)?)
-          },
-          _ => {
-              let body = &resp.text().await?;
-              Err(Box::new(serde_json::from_str::<ApiErrorResponse>(&body)?))
-          }
+        queries.push(format!("page[number]={}", &page_number));
       }
+      if let Some(page_size) = &self.page_size {
+        queries.push(format!("page[size]={}", &page_size));
+      }
+      let path = "/api/v2/security_monitoring/rules";
+      let path_and_query = match queries.len() {
+        0 => path.to_string(),
+        _ => format!("{}?{}", &path, queries.join("&")),
+      };
+      println!("{}", &path_and_query);
+      
+      client.get::<ListRulesRequest, ListRulesResponse>(&path_and_query).await
   }
 }
 

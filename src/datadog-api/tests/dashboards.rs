@@ -2,6 +2,17 @@ use datadog_api::Client;
 use datadog_api::dashboards::*;
 use tokio_test::block_on;
 
+/// Cretes a dashboard with the minimal amount of settings supported by DD
+#[test]
+fn test_create_dashboard_empty() {
+    let client = Client::default();
+    let req = CreateDashboardRequest::default()
+        .title("datadog-api-rs: test_create_dashboard_empty")
+        .layout_type(LayoutType::Ordered);
+    let res = block_on(req.send(&client)).expect("API call failed");
+    // assert_ne!(0, res.status);
+}
+
 /// Updates a dashboard with the minimal amount of settings supported by DD
 #[test]
 fn test_update_dashboard_empty() {

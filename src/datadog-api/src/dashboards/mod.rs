@@ -105,6 +105,13 @@ impl UpdateDashboardRequest {
   }
 }
 
+impl UpdateDashboardRequest {
+  pub async fn send(&self, client: &Client) -> DatadogResult<UpdateDashboardResponse> {
+    let path_and_query = format!("/api/v1/dashboard/{}", self.dashboard_id);
+    client.put::<UpdateDashboardRequest, UpdateDashboardResponse>(&path_and_query, &self).await
+  }
+}
+
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct UpdateDashboardResponse {
@@ -124,37 +131,93 @@ pub struct UpdateDashboardResponse {
   pub widgets: Vec<Widget>,
 }
 
-impl UpdateDashboardRequest {
-  // pub fn filter(mut self, filter: Filter) -> UpdateDashboardRequest {
-  //   self.filter = Some(filter);
-  //   self
-  // }
-  
-  pub async fn send(&self, client: &Client) -> Result<UpdateDashboardResponse> {
-    if self.dashboard_id.is_empty() {
-      return Err(Box::new(InputValidationError::new("Missing dashboard_id request parameter")))
-    }
-    let url = format!("{}/api/v1/dashboard/{}", client.host, self.dashboard_id);
+/// [Create a new dashboard](https://docs.datadoghq.com/api/latest/dashboards/#create-a-new-dashboard)
+/// 
+/// Create a dashboard using the specified options. When defining queries in your widgets, take note of which queries should have the as_count() or as_rate() modifiers appended. Refer to the following documentation for more information on these modifiers.
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct CreateDashboardRequest {
+  /// Description of the dashboard.
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub description: Option<String>,
+  /// Whether this dashboard is read-only. If True, only the author and admins can make changes to it.
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub is_read_only: Option<bool>,
+  /// Layout type of the dashboard. Allowed enum values: `ordered`, `free`
+  pub layout_type: LayoutType,
+  /// List of handles of users to notify when changes are made to this dashboard.
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub notify_list: Option<Vec<String>>,
+  /// /// Reflow type for a new dashboard layout dashboard. Set this only when layout type is `ordered`. If set to `fixed`, the dashboard expects all widgets to have a layout, and if it's set to `auto`, widgets should not have layouts. Allowed enum values: `auto`, `fixed`
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub reflow_type: Option<ReflowType>,
+  /// A list of role identifiers. Only the author and users associated with at least one of these roles can edit this dashboard. Overrides the `is_read_only` property if both are present
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub restricted_roles: Option<Vec<String>>,
+  /// Array of template variables saved views.
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub template_variable_presets: Option<Vec<TemplateVariablePreset>>,
+  /// List of template variables for this dashboard.
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub template_variables: Option<Vec<TemplateVariable>>,
+  /// Title of the dashboard.
+  pub title: String,
+  /// List of widgets to display on the dashboard.
+  pub widgets: Vec<Widget>,
+}
 
-    // let json = serde_json::to_string(&self);
-    // println!("{:?}", json);
-
-    let resp = client.client.put(url)
-                          .header("DD-API-KEY", client.api_key.to_string())
-                          .header("DD-APPLICATION-KEY", client.application_key.to_string())
-                          .json(&self)
-                          .send().await?;
-
-    match &resp.status().is_success() {
-        true => {
-            let body = &resp.text().await?;
-            println!("{:?}", &body);
-            Ok(serde_json::from_str::<UpdateDashboardResponse>(&body)?)
-        },
-        _ => {
-            let body = &resp.text().await?;
-            Err(Box::new(serde_json::from_str::<ApiErrorResponse>(&body)?))
-        }
-    }
+impl CreateDashboardRequest {
+  pub fn title(mut self, title: &str) -> CreateDashboardRequest {
+    self.title = title.into();
+    self
   }
+  pub fn layout_type(mut self, layout_type: LayoutType) -> CreateDashboardRequest {
+    self.layout_type = layout_type;
+    self
+  }
+  pub fn widgets(mut self, widgets: Vec<Widget>) -> CreateDashboardRequest {
+    self.widgets = widgets;
+    self
+  }
+
+  pub async fn send(&self, client: &Client) -> DatadogResult<CreateDashboardResponse> {
+    let path_and_query = "/api/v1/dashboard";
+    client.post::<CreateDashboardRequest, CreateDashboardResponse>(&path_and_query, &self).await
+  }
+}
+
+/// A dashboard is Datadog’s tool for visually tracking, analyzing, and displaying key performance metrics, which enable you to monitor the health of your infrastructure.
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct CreateDashboardResponse {
+  /// Identifier of the dashboard author.
+  pub author_handle: String,
+  /// Creation date of the dashboard.
+  pub created_at: String,
+  /// Description of the dashboard.
+  pub description: Option<String>,
+  /// ID of the dashboard.
+  pub id: String,
+  /// Whether this dashboard is read-only. If True, only the author and admins can make changes to it.
+  pub is_read_only: bool,
+  /// Layout type of the dashboard. Allowed enum values: `ordered`, `free`
+  pub layout_type: LayoutType,
+  /// Modification date of the dashboard.
+  pub modified_at: String,
+  /// List of handles of users to notify when changes are made to this dashboard.
+  pub notify_list: Option<Vec<String>>,
+  /// Reflow type for a new dashboard layout dashboard. Set this only when layout type is `ordered`. If set to `fixed`, the dashboard expects all widgets to have a layout, and if it's set to `auto`, widgets should not have layouts. Allowed enum values: `auto`, `fixed`
+  pub reflow_type: Option<ReflowType>,
+  /// A list of role identifiers. Only the author and users associated with at least one of these roles can edit this dashboard. Overrides the `is_read_only` property if both are present.
+  pub restricted_roles: Option<Vec<String>>,
+  /// Array of template variables saved views.
+  pub template_variable_presets: Option<Vec<TemplateVariablePreset>>,
+  /// List of template variables for this dashboard.
+  pub template_variables: Option<Vec<TemplateVariable>>,
+  /// Title of the dashboard.
+  pub title: String,
+  /// The URL of the dashboard.
+  pub url: String,
+  /// List of widgets to display on the dashboard.
+  pub widgets: Vec<Widget>,
 }
