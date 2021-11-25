@@ -74,6 +74,7 @@ impl Client {
     match &resp.status().is_success() {
       true => {
         let body = resp.text().await?;
+        println!("{:?}", &body);
         Ok(serde_json::from_str::<R>(
           &body,
         )?)
@@ -132,6 +133,7 @@ impl Client {
     match &resp.status().is_success() {
       true => {
         let body = resp.text().await?;
+        println!("{:?}", &body);
         Ok(serde_json::from_str::<R>(
           &body,
         )?)

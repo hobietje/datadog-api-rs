@@ -37,7 +37,6 @@ impl ListRulesRequest {
         0 => path.to_string(),
         _ => format!("{}?{}", &path, queries.join("&")),
       };
-      println!("{}", &path_and_query);
       
       client.get::<ListRulesRequest, ListRulesResponse>(&path_and_query).await
   }
