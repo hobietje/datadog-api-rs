@@ -40,20 +40,23 @@ let res =req.send(&client).await.unwrap();
 
 # Todo
 
-I will be implementing new functionality on an "as needed" basis only for projects I am working on.  I am not targeting 100% coverage of endpoints and features at this point in time.
-
-* Macros to codegen similar parts of API calls
-* Handle rate limits
-* Iterators or Streams for paginated result sets
-* Paginated queries are currently messy due to request builder being consumed, needs redesign?
-* Increase coverage of API endpoints
-* Utilities to handle date ranges, timezones, etc.
+_I am implementing new functionality on an "as needed" basis only for projects I am working on.  I am not targeting 100% coverage of endpoints and features at this point in time._
 
 Contributions are welcome; send a PR.
 
+Things I would like to improve or add:
+
+* Macros to codegen similar parts of API calls (e.g. Rust builders)
+* Handling rate limits
+* Iterators or Streams for paginated result sets
+* Paginated queries are currently messy due to request builder being consumed, potentially needs redesign?
+* Increase coverage of API endpoints
+* Utilities to better handle date ranges, timezones, etc.
+* More comprehensive tests, with reliable post-test cleanup
+
 ## API Endpoint Coverage
 
-Rust-style Builders are in place to build requests and parse responses for the following APIs:
+Strongly typed models with Rust-style Builders are (roughly) in place for the following APIs:
 
 | Done | Category                            |
 | ---- | ----------------------------------- |
@@ -80,7 +83,7 @@ Rust-style Builders are in place to build requests and parse responses for the f
 | No   | Logs Pipelines                      |
 | No   | Logs Restriction Queries            |
 | No   | Metrics                             |
-| No   | Monitors                            |
+| 4/13 | Monitors                            |
 | No   | Notebooks                           |
 | No   | Organizations                       |
 | No   | PagerDuty Integration               |
