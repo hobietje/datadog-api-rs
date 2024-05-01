@@ -1,7 +1,11 @@
 //! Monitors allow you to watch a metric or check that you care about and notifies your team when a defined threshold has exceeded.
 use crate::client::*;
 use serde::{Deserialize, Serialize};
+use async_gen::Return;
+use std::{future::Future, pin::pin};
 use std::collections::HashMap;
+use async_gen::{self, AsyncGen, AsyncIter};
+use futures_core::Stream;
 
 /// Search and filter your monitors details.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
@@ -59,6 +63,31 @@ impl MonitorsSearchRequest {
         client
             .get::<MonitorsSearchRequest, MonitorsSearchResponse>(&path_and_query)
             .await
+    }
+
+    pub fn iter<'a>(&'a self, client: &'a Client) -> impl Stream<Item = Monitor> + 'a {
+        let iter = AsyncIter::from(async_gen::gen! {
+            let mut page = self.page.unwrap_or(0);
+            loop {
+                let request = MonitorsSearchRequest {
+                    query: self.query.clone(),
+                    page: Some(page),
+                    per_page: self.per_page,
+                    sort: self.sort.clone(),
+                };
+                let result = request.send(client).await.expect("Failed to call .send()");
+                // Iterate over all results
+                for item in result.monitors {
+                    yield item;
+                }
+                // Stop iterating when we hit the last page
+                if result.metadata.page >= result.metadata.page_count {
+                    return;
+                }
+                page = page + 1;
+            }
+        });
+        iter
     }
 }
 
@@ -180,6 +209,8 @@ pub enum MonitorType {
     EventV2Alert,
     #[serde(rename="audit alert")]
     AuditAlert,
+    #[serde(rename="ci-pipelines alert")]
+    CiPipelinesAlert,
 }
 impl Default for MonitorType {
   fn default() -> MonitorType {

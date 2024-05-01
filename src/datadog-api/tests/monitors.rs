@@ -1,6 +1,10 @@
+use std::pin::pin;
+
 use datadog_api::Client;
 use datadog_api::monitors::*;
 use tokio_test::block_on;
+use std::future::{poll_fn, Future};
+use futures_util::StreamExt;
 
 /// Minimal search for monitors
 #[test]
@@ -11,6 +15,19 @@ fn test_monitors_search() {
         .query("security");
     let res = block_on(req.send(&client)).expect("API call failed");
     // assert_ne!(0, res.status);
+}
+
+/// Iterable search for monitors
+#[test]
+fn test_monitors_search_iter() {
+    let res = block_on(async {
+        let client = Client::default();
+        let req = MonitorsSearchRequest::default()
+            .query("security");
+        let v: Vec<Monitor> = req.iter(&client).collect().await;
+        println!("{}", v.len());
+        assert_ne!(0, v.len());
+    });
 }
 
 /// Creates a minimal monitor
